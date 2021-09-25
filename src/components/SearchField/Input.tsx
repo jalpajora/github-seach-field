@@ -17,7 +17,10 @@ const Input = ({
         onChange={handleChange}
       />
       {searchTerm.length > 0 && (
-        <small className='search-count'>{`${totalCount} found`}</small>
+        <small
+          className='search-count'
+          data-testid='search-count'
+        >{`${totalCount} found`}</small>
       )}
     </div>
   );

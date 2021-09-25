@@ -45,7 +45,7 @@ const SearchField = ({ placeholder = 'Search users', icon, apiUrl }: Props) => {
   ] = useSearchField(apiUrl);
 
   return (
-    <section className='search-field'>
+    <section className='search-field' data-testid='search-field'>
       <Input
         icon={icon}
         placeholder={placeholder}
