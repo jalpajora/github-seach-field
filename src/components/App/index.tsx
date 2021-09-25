@@ -2,7 +2,7 @@ import './style.css';
 import SearchField from '../SearchField';
 import githubIconSrc from '../../images/github.png';
 
-const GithubSearchField = () => {
+export const GithubSearchField = () => {
   const icon = {
     src: githubIconSrc,
     alt: 'Github',
