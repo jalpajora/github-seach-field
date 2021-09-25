@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useDebounce } from './';
 
 type GithubResult = {
   incomplete_results?: boolean;
@@ -8,35 +9,37 @@ type GithubResult = {
 
 type SearchFieldHook = [
   GithubResult,
+  boolean,
   string,
   (e: React.ChangeEvent<HTMLInputElement>) => void
 ];
 
-export function useSearchField(
-  newValue: string = '',
-  searchUrl: string = ''
-): SearchFieldHook {
-  const [value, setValue] = useState(newValue);
+export function useSearchField(searchUrl: string = ''): SearchFieldHook {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchDone, startSearchDone] = useState(false);
   const [result, setResult] = useState({});
-  const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(target.value);
-  };
+  const debouncedValue = useDebounce(searchTerm);
 
   const fetchData = useCallback(
-    async (searchTerm: string) => {
-      const result = await fetch(`${searchUrl}?q=${searchTerm}`);
+    async (query: string) => {
+      const result = await fetch(`${searchUrl}?q=${query}`);
       const data = await result.json();
-      console.log(data);
       setResult(data);
+      startSearchDone(true);
     },
     [searchUrl]
   );
 
   useEffect(() => {
-    if (value.length > 3) {
-      fetchData(value);
+    if (debouncedValue.length > 3) {
+      fetchData(debouncedValue);
+      startSearchDone(false);
     }
-  }, [value, fetchData]);
+  }, [debouncedValue, fetchData]);
 
-  return [result, value, handleChange];
+  const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(target.value);
+  };
+
+  return [result, isSearchDone, searchTerm, handleChange];
 }
